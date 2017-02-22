@@ -1,0 +1,29 @@
+{
+  "name": "canvas-syncing-assignment-part2",
+  "version": "1.0.0",
+  "description": "Part 2 of Canvas Sync Assignment",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jordo754/canvas-syncing-assignment-part2.git"
+  },
+  "author": "Jordan Mato",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jordo754/canvas-syncing-assignment-part2/issues"
+  },
+  "homepage": "https://github.com/Jordo754/canvas-syncing-assignment-part2#readme",
+  "devDependencies": {
+    "eslint": "^3.16.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0"
+  },
+  "dependencies": {
+    "socket.io": "^1.7.3"
+  }
+}

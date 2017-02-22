@@ -1,13 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
-    <script type="text/babel" >
+    <script type="text/babel">
+      (function(){
         "use strict";
-    
+        //canvas atts
+        let canvas;
+        let ctx;
+        let socket;
+        
+        //control atts
+        const redSquare = document.querySelector('#red');
+        const greenSquare = document.querySelector('#green');
+        const blueSquare = document.querySelector('#blue');
+        const randomSquare = document.querySelector('#random');
+        
+        //drawing atts
+        let usingColor = 'none';
+        let draws = {};
+        
+        const draw = () => {
+          const keys = Object.keys(draws);
+          
+          for(let i = 0; i < keys.length; i++) {
+            let square = draws[keys[i]];
+            
+            ctx.fillStyle = square.color;
+            ctx.fillRect(square.x, square.y, square.width, square.height);
+          }
+        };
+        
+        const sendUpdate = (mouse) => {
+          if (usingColor !== 'none') {
+            socket.emit('clientUpdate', { x: mouse.x - 50, y: mouse.y - 50, width: 100, height: 100, color: usingColor });
+          }
+        };
+        
+        const update = (data) => {
+          const keys = Object.keys(data);
+          console.dir(keys);
+          
+          for(let i = 0; i < keys.length; i++) {
+            draws[keys[i]] = data[keys[i]];
+          }
+          
+          draw();
+        };
+        
+        const ioInit = () => {
+          socket = io.connect();
+          
+          socket.on('join', (data) => {
+            draws = data;
+            draw();
+          });
+          
+          socket.on('serverUpdate', update);
+          
+          socket.on('serverReturnUpdate', (data) => {
+            draws[data.timestamp] = data.square;
+            
+            draw();
+          });
+        };
+        
+        const canvasInit = () => {
+          canvas = document.querySelector('canvas');
+          ctx = canvas.getContext('2d');
+          
+          canvas.onclick = (e) => {
+            //get mouse
+            var mouse = {}
+            mouse.x = e.pageX - e.target.offsetLeft;
+            mouse.y = e.pageY - e.target.offsetTop;
+            
+            //send server an update
+            sendUpdate(mouse);
+          };
+        };
+        
+        const controlsInit = () => {
+          //setup buttons
+          redSquare.onclick = (e) => {
+            usingColor = 'red';
+          };
+          greenSquare.onclick = (e) => {
+            usingColor = 'green';
+          };
+          blueSquare.onclick = (e) => {
+            usingColor = 'blue';
+          };
+          randomSquare.onclick = (e) => {
+            usingColor = `rgb(${Math.round(Math.random()*254+1)}, ${Math.round(Math.random()*254+1)}, ${Math.round(Math.random()*254+1)})`;
+          };
+        };
+        
+        const init = () => {
+          canvasInit();
+          
+          ioInit();
+          
+          controlsInit();
+        };
+        
+        window.onload = init;
+      }());
     </script>
-</head>
-<body>
+  </head>
+  <body>
+    <canvas width="500" height="300">
+      Get a real browser!
+    </canvas>
 
-</body>
+    <section id="controls">
+      <button id="red">Red Square</button>
+      <button id="green">Green Square</button>
+      <button id="blue">Blue Square</button>
+      <button id="random">Random Square</button>
+    </section>
+  </body>
 </html>
