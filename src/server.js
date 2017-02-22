@@ -80,6 +80,5 @@ console.log('Websocket server started');
 
 setInterval(() => {
   io.sockets.in('lobby').emit('serverUpdate', newDraws);
-  console.log('send update');
   newDraws = {};
 }, 1000);
